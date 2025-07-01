@@ -18,11 +18,6 @@ public class CommentController(DrawingService drawingService, ICommentService co
   private readonly ILogger<CommentController> _logger = logger;
   private readonly DrawingService _drawingService = drawingService;
 
-  //getall
-  //getbyid
-  //create
-  //update
-  //delete
   [HttpGet("drawing/{drawingId}")]
   public async Task<ActionResult<PagedResponse<Comment>>> GetCommentsForDrawing(int drawingId, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
   {

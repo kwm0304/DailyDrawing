@@ -11,6 +11,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
   public DbSet<Upvote> Upvotes { get; set; }
   public DbSet<Badge> Badges { get; set; }
   public DbSet<Follow> Follows { get; set; }
+  public DbSet<RefreshToken> RefreshTokens { get; set; }
   protected override void OnModelCreating(ModelBuilder builder)
   {
     base.OnModelCreating(builder);
@@ -61,6 +62,24 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
       entity.ToTable(t => t.HasCheckConstraint("CK_Follow_NoSelfFollow",
         "[FollowerId] != [FollowingId]"));
+    });
+
+    builder.Entity<RefreshToken>(entity =>
+    {
+      entity.HasKey(r => r.Id);
+      entity.Property(rt => rt.Token).IsRequired().HasMaxLength(256);
+      entity.Property(rt => rt.UserId).IsRequired();
+      entity.Property(rt => rt.CreatedByIp).HasMaxLength(45);
+      entity.Property(rt => rt.RevokedByIp).HasMaxLength(45);
+
+      entity.HasOne(rt => rt.User)
+            .WithMany()
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+      entity.HasIndex(rt => rt.Token).IsUnique();
+      entity.HasIndex(rt => rt.UserId);
+      entity.HasIndex(rt => rt.ExpiresAt);
     });
   }
 }

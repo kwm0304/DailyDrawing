@@ -35,6 +35,8 @@ public static class ApplicationServiceExtensions
     services.AddScoped<IEmailService, EmailService>();
     services.AddScoped<IUserService, UserService>();
     services.AddScoped<Mapper>();
+    services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+    services.AddHostedService<TokenCleanupService>();
     return services;
   }
 }

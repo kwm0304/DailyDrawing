@@ -29,8 +29,16 @@ public class FollowService(AppDbContext context, ILogger<FollowService> logger) 
   public async Task<bool> DeleteFollow(AppUser follower, AppUser following)
   {
     var res = await _context.Follows.Where(f => f.Follower == follower && f.Following == following).ExecuteDeleteAsync();
-
-    return res > 0;
+    if (res > 0)
+    {
+      _logger.LogInformation("User {Follower} is no longer following {Following}", follower.DisplayName, following.DisplayName);
+      return true;
+    }
+    else
+    {
+      _logger.LogInformation("Failed to delete follow for {Follower} following {Following}", follower.DisplayName, following.DisplayName);
+      return false;
+    }
   }
 
   public async Task<List<FollowDto>> GetAllFollowersForUser(string userId)
